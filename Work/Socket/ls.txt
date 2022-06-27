@@ -1,0 +1,6 @@
+Hello
+a.out
+ls.txt
+main.c
+name
+name.c
