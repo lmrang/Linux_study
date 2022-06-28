@@ -19,17 +19,22 @@ int main(int argc, char* argv[])
 		exit(1);
 	}
 
-	sock = socket(PF_INET, SOCK_STREAM, 0);
+	sock = socket(PF_INET, SOCK_STREAM, 0);				//소켓생성
 	if(sock == -1)
 		error_handling("socket() error");
 
-		memset(&serv_addr, 0, sizeof(serv_addr));
+		memset(&serv_addr, 0, sizeof(serv_addr));		//초기화
 		serv_addr.sin_family=AF_INET;
 		serv_addr.sin_addr.s_addr=inet_addr(argv[1]);
 		serv_addr.sin_port=htons(atoi(argv[2]));
 
-		if(connect(sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) == -1)
+		if(connect(sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) == -1)	//실패시 -1
+		//클라이언트 소켓의 파일 디스크립터, 서버의 주소정보, 구조체 크기
 			error_handling("connect() error!");
+		/*클라이언트 소켓 주소정보는?
+		  connect 함수가 호출될때 운영체제(커널)에서
+		  IP는 컴퓨터에 할당된, PORT는 임의로 선택해서 할당된다.
+		  (명시적으로 호출할 필요없음!!) */
 
 		str_len=read(sock, message, sizeof(message)-1);
 		if(str_len == -1)
