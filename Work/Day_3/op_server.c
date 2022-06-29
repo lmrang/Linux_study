@@ -22,18 +22,24 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	serv_sock = socket(PF_INET, SOCK_STREAM, 0);
+	serv_sock = socket(PF_INET, SOCK_STREAM, 0);			//IPv4, TCP
 	if(serv_sock == -1) error_handling("socket() error!");
 
-	memset(&serv_adr, 0, sizeof(serv_adr));
-	serv_adr.sin_family = AF_INET;
-	serv_adr.sin_addr.s_addr = htonl(INADDR_ANY);
+	memset(&serv_adr, 0, sizeof(serv_adr));					//초기화
+	serv_adr.sin_family = AF_INET;							//IPv4
+	serv_adr.sin_addr.s_addr = htonl(INADDR_ANY);			//사용가능한 랜카드의 IP
 	serv_adr.sin_port = htons(atoi(argv[1]));
+	/*
+	sockaddr_in 주소체계를 지정하기 위해서는 AF(Address Family)
+	socket() 실제 연결하기위한 프로토콜 지정 PF(Protocol Family)
+	리눅스에서는 PF와 AF가 서로 같음. (바꿔서 써도 된다는 뜻)
+	*/
 
 	if(bind(serv_sock, (struct sockaddr*)&serv_adr, sizeof(serv_adr))==-1)
 		error_handling("bind() error!");
 	if(listen(serv_sock, 5) == -1)
 		error_handling("listen() error!");
+
 	clnt_adr_sz = sizeof(clnt_adr);
 
 	for(i=0;i<5;i++)
