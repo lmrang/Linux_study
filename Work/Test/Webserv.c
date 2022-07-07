@@ -14,7 +14,7 @@ char webpage[] = "HTTP/1.1 200 OK\r\n"
 		"<!DOCTYPE html>\r\n"
 		"<html><head><title> My Web Page </title>\r\n"
 		"<style>body {background-color: #FFFF00 }</style></head>\r\n"
-		"<body><center><h1>Hello world!!</h1><br>\r\n"
+		"<body><center><h1>재롱아 너무 귀여워!!</h1><br>\r\n"
 		"<img src=\"index.jpg\"></center></body></html>\r\n";
 
 int main(int argc, char *argv[])
@@ -22,11 +22,10 @@ int main(int argc, char *argv[])
 	int serv_sock, clnt_sock;
 	struct sockaddr_in serv_adr, clnt_adr;
 	int clnt_adr_sz;
-	char img_buf[1000000];
+	char img_buf[2000000];
 	char buf[BUF_SIZE];
 	int n, fd;
-	int len;
-	//pthread_t t_id;
+	char *file_name;
 
 	if(argc!=2)	{
 		printf("Usage : %s <port>\n", argv[0]);
@@ -49,18 +48,25 @@ int main(int argc, char *argv[])
 		clnt_adr_sz=sizeof(clnt_adr);
 		clnt_sock=accept(serv_sock, (struct sockaddr*)&clnt_adr, &clnt_adr_sz);
 		printf("connection....");
-		read(clnt_sock, buf, BUF_SIZE);
-		printf("%s", buf);
-
-		write(clnt_sock, webpage, sizeof(webpage));		//클라이언트에게 송신
-
 		n=read(clnt_sock, buf, BUF_SIZE);
 		printf("%s", buf);
+		if(n<0) printf("read error!\n\n");
 
-		fd=open("index.jpeg", O_RDONLY);
-		len = read(fd, img_buf, sizeof(img_buf));
-		write(fd, img_buf, len);
-		close(fd);
+		file_name=strstr(buf, "/");
+		printf("1. %s\n\n", file_name);
+		file_name=strtok(file_name, " ");
+		printf("2. %s\n\n", file_name);
+
+		if(strcmp(file_name, "/index.jpg")==0)
+		{
+			printf("Check 1!\n\n");
+			fd=open("index.jpeg", O_RDONLY);
+			read(fd, img_buf, sizeof(img_buf));
+			write(clnt_sock, img_buf, sizeof(img_buf));
+			break;
+		}
+		else
+			write(clnt_sock, webpage, sizeof(webpage));
 	}
 	close(clnt_sock);
 	close(serv_sock);
